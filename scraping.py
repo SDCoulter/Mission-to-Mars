@@ -7,10 +7,30 @@ from bs4 import BeautifulSoup as soup
 from webdriver_manager.chrome import ChromeDriverManager
 # Need to use Pandas' read_html() function.
 import pandas as pd
+# For saving last modified date.
+import datetime as dt
 
-# Create ChromeDriver executable path.
-executable_path = {'executable_path': ChromeDriverManager().install()}
-browser = Browser('chrome', **executable_path, headless=False)
+
+# Main function to initialize the browser.
+def scrape_all():
+    # Create ChromeDriver executable path.
+    executable_path = {'executable_path': ChromeDriverManager().install()}
+    # Set to true as we don't want to see the browser opening and scraping.
+    browser = Browser('chrome', **executable_path, headless=True)
+    # Set news title and paragraph variables.
+    news_title, news_paragraph = mars_news(browser)
+    # Run all the scraping functions and create a dictionary of results.
+    data = {
+        'news_title': news_title,
+        'news_paragraph': news_paragraph,
+        'featured_image': featured_image(browser),
+        'facts': mars_facts(),
+        'last_modified': dt.datetime.now()
+    }
+    # Close the browser session and return the dict.
+    browser.quit()
+    return data
+
 
 # Make a function to scrape the news data.
 def mars_news(browser):
@@ -33,6 +53,7 @@ def mars_news(browser):
         return None, None
     return news_title, news_p
 
+
 # Function to scrape the image.
 def featured_image(browser):
     # Visit the URL.
@@ -54,8 +75,9 @@ def featured_image(browser):
     img_url = f'https://spaceimages-mars.com/{img_url_rel}'
     return img_url
 
+
 # Function to scrape table of data.
-def mars_facts()
+def mars_facts():
     # Handle errors.
     try:
         # Read the data from the website, store the first table element as a DataFrame.
@@ -70,5 +92,7 @@ def mars_facts()
     df_html = df.to_html()
     return df_html
 
-# Close the browser session.
-browser.quit()
+
+if __name__ == '__main__':
+    # If running script, print scraped data.
+    print(scrape_all())

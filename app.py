@@ -32,5 +32,5 @@ def scrape():
     return redirect('/', code=302)
 
 # Tell Flask to run.
-if __name__ = "__main__":
+if __name__ == "__main__":
     app.run()
