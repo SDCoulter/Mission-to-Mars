@@ -12,7 +12,7 @@
   <div class="container">
     <div class="jumbotron text-center">
       <h1>Mission to Mars</h1>
-      <p><a class="btn btn-primary btn-lg" href="/scrape" role="button">Scrape New Data</a></p>
+      <p><a class="btn btn-success btn-block" href="/scrape" role="button">Scrape New Data</a></p>
     </div>
 
     <!-- Mars News -->
@@ -20,7 +20,10 @@
       <div class="col-md-12">
         <div class="media">
           <div class="media-body">
-            <h2>Latest Mars News</h2>
+            <div style="display: flex; justify-content: space-between;">
+              <h2>Latest Mars News</h2>
+              <p>Last Updated: {{mars.last_modified}}</p>
+            </div>
             <h4 class="media-heading">{{mars.news_title}}</h4>
             <p>{{mars.news_paragraph}}</p>
           </div>
@@ -30,20 +33,44 @@
 
     <!-- Featured Image -->
     <div class="row" id="mars-featured-image">
-      <div class="col-md-8">
-        <h2>Featured Mars Image</h2>
-        <img src="{{mars.featured_image}}" class="img-responsive" alt="Responsive image" />
+      <div class="col-md-7 text-center">
+        <h3>Featured Mars Image</h3>
+        <img src="{{mars.featured_image}}" class="img-responsive img-rounded" alt="Responsive image" />
       </div>
-      <div class="col-md-4">
+      <div class="col-md-5 text-center">
         <div class="row" id="mars-facts">
-          <h4>Mars Facts</h4>
+          <h3>Mars Facts</h3>
           {{mars.facts|safe}}
         </div>
       </div>
     </div>
 
+    <!-- HD Hemisphere Images -->
+    <div class="row" id="mars-hemisphere-cards">
+      <div class="col-md-12 text-center">
+        <h3>Mars Hemispheres</h3>
+      </div>
+      {% for image in mars.hemispheres %}
+      <div class="col-md-3">
+        <div class="card mb-4 shadow-sm" style="border-radius: 5px; box-shadow: 0px 0px 10px 2px rgba(0,0,0,.2)"><!-- style="border-radius: 5px; border: 1px solid lightgray; padding: 2px;">-->
+          <img class="card-img-top img-responsive" src="{{image.img_url}}" alt="{{image.title}}" style="border-radius: 5px 5px 0 0;">
+          <div class="card-body" style="text-align: center;">
+            <h5 class="card-title">{{image.title}}</h5>
+            <a role="button" class="btn btn-info btn-small" href="{{image.img_url}}" style="margin: 10px;">View Full Image</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
 
-
+    <footer>
+      <div style="display: flex; justify-content: space-between; margin: 60px 20px 40px 20px;">
+        <p>Module 10 of UoT SCS Data Bootcamp - Mission to Mars</p>
+        <p>
+          <a href="https://github.com/SDCoulter">github.com/SDCoulter</a>
+        </p>
+      </div>
+    </footer>
   </div>
 </body>
 </html>

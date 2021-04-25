@@ -25,7 +25,8 @@ def scrape_all():
         'news_paragraph': news_paragraph,
         'featured_image': featured_image(browser),
         'facts': mars_facts(),
-        'last_modified': dt.datetime.now()
+        'last_modified': dt.datetime.now(),
+        'hemispheres': mars_hemispheres(browser)
     }
     # Close the browser session and return the dict.
     browser.quit()
@@ -88,9 +89,56 @@ def mars_facts():
     df.columns = ['description', 'Mars', 'Earth']
     # Set the index to the different categories/descriptors.
     df.set_index('description', inplace=True)
-    # Save the DataFrame as HTML.
-    df_html = df.to_html()
+
+    # Remove the index name - for formatting purposes.
+    df.index.name = None
+
+    # Save the DataFrame as HTML. (Pass Bootstrap class to html tags.)
+    df_html = df.to_html(classes="table table-striped")
     return df_html
+
+
+# Function to scrape hemisphere data (Titles and Images).
+def mars_hemispheres(browser):
+    # Visit the hemispheres URL - use browser argument to access.
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url)
+
+    # Create a list to hold the images and titles.
+    hemisphere_image_urls = []
+
+    # Write code to retrieve the image urls and titles for each hemisphere.
+    # Parse the html.
+    html = browser.html
+    page_soup = soup(html, 'html.parser')
+
+    # Find all the divs with a class of 'description'.
+    image_divs = page_soup.find_all('div', class_='description')
+    # Loop through all the divs.
+    for image in image_divs:
+        #Create empty dictionary to store title and URL.
+        hemisphere_dict = {}
+
+        # Get the title of the image.
+        title = image.find('h3').text
+
+        # Create the URL to access the page with the HD image, and visit it.
+        create_url = f"https://astrogeology.usgs.gov{image.find('a').get('href')}"
+        browser.visit(create_url)
+
+        # Parse the image webpage.
+        image_page_soup = soup(browser.html, 'html.parser')
+
+        # Get the url of the image, combine into a full URL.
+        full_res_url = image_page_soup.find('div', class_='downloads').find('a').get('href')
+
+        # Populate the dictionary and add it to the main list.
+        hemisphere_dict['img_url'] = full_res_url
+        hemisphere_dict['title'] = title
+        hemisphere_image_urls.append(hemisphere_dict)
+
+    # Return the dictionary.
+    return hemisphere_image_urls
 
 
 if __name__ == '__main__':
